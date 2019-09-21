@@ -167,8 +167,8 @@ class MonitorDZ:
     @classmethod
     def get_ip(cls):
         """"获取代理IP"""
-        url = 'http://dps.kdlapi.com/api/getdps/?orderid=976817712394420&num=1&pt=1&dedup=1&format=json&sep=1' # 获取代理IP
-        ip = "spiderbeg:pythonbe@106.52.85.210:8000" # 默认IP
+        url = dzaccount.proxies_url # 获取代理IP
+        ip = None
         for _ in range(2):
             try:
                 r = requests.get(url)
@@ -183,11 +183,13 @@ class MonitorDZ:
                     break
             except requests.exceptions.RequestException as e:
                 LOGGER.info('get_ip -》 requests error %s .', e)
+        
         proxies = {
             "http": "http://" + dzaccount.ipaccount + ip,
             "https": "http://" + dzaccount.ipaccount + ip,
-        }
-        return proxies
+        } if ip else None
+        
+        return proxies or {}
 
     @staticmethod
     def work(cityid='16', shopname='薇拉上善',proxies = {}) -> None:
@@ -196,10 +198,7 @@ class MonitorDZ:
         # 1、城市 2、关键词
         basepath = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(basepath,'dzinfo.txt')
-        proxies = {
-            "http": "http://spiderbeg:pythonbe@106.52.85.210:8000",
-            "https": "http://spiderbeg:pythonbe@106.52.85.210:8000",
-        }
+        proxies = {}
         kwz = {'婚纱礼服':quote('婚纱礼服'), "婚纱租赁":quote('婚纱租赁'), '化妆造型':quote('化妆造型')}
         for t,kwu in enumerate(kwz): # 搜索关键
             # if t > 0:
